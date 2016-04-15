@@ -9,7 +9,7 @@ function validate_cuit(cuit){
 		if (i == 2 || i == 11) {
 			if (cuit[i] != '-') return false;
 		} else {
-			if (!!isNaN(parseInt(cuit[i]))) return false;
+			if (isNaN(parseInt(cuit[i]))) return false;
 			if (i  < 12) {
 				digits.push(cuit[i]);
 			}
