@@ -1,27 +1,38 @@
-function validate_cuit(cuit){
 
-	if(cuit == null || cuit == undefined){
-		return false;
-	}
-	var digits = Array();
-	if (cuit.length != 13) return false;
-	for (var i = 0; i < cuit.length; i++) {
-		if (i == 2 || i == 11) {
-			if (cuit[i] != '-') return false;
-		} else {
-			if (isNaN(parseInt(cuit[i]))) return false;
-			if (i  < 12) {
-				digits.push(cuit[i]);
-			}
-		}
-	}
-	var acum = 0;
-	var multiplication_array = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-	for(var j=0; j<multiplication_array.length; j++) {
-		acum += digits[j] * multiplication_array[j];
-	}
-	var cmp = 11 - (acum % 11);
-	if (cmp == 11) cmp = 0;
-	if (cmp == 10) cmp = 9;
-	return (cuit[12] == cmp);
+var CuitValidator = {
+    /* CUIT validation method */
+    validate: function(cuit){
+        /* We check the 99-9999999999-9 format */
+        var cuit_format= /^[0-9]{2}-[0-9]{8}-[0-9]$/;
+        if(!cuit_format.test(cuit)){
+            return false;
+        }
+
+        /* Get the verification digit */
+        var cuit_verification_digit = CuitValidator.get_cuit_verification_digit(cuit);
+
+        /* The last digit of the cuit should be equal to the verification digit. */
+        return cuit[12] == cuit_verification_digit;
+    },
+
+    /* For a given CUIT, calculates the valid verification digit. */
+    get_cuit_verification_digit: function (cuit){
+        // Remove the -'s
+        var digits = cuit.replace("-", "").replace("-", "");
+
+        var acum = 0;
+        var multiplication_array = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        for(var j=0; j<multiplication_array.length; j++) {
+            acum += digits[j] * multiplication_array[j];
+        }
+
+        var verification_digit = 11 - (acum % 11);
+        if (verification_digit == 11){
+            verification_digit = 0;
+        }
+        if (verification_digit == 10){
+            verification_digit = 9;
+        }
+        return verification_digit;
+    }
 }
